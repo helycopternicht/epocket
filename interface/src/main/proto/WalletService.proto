@@ -1,0 +1,35 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "com.helycopternicht.epocket.api";
+
+message Empty {}
+
+message DepositRequest {
+    int64 userId = 1;
+    double amount = 2;
+    string currency = 3;
+}
+
+message WithdrawRequest {
+    int64 userId = 1;
+    double amount = 2;
+    string currency = 3;
+}
+
+message UserBalanceRequest {
+    int64 userId = 1;
+}
+
+message UserBalanceResponse {
+    map<string, double> balances = 1;
+}
+
+service WalletService {
+
+    rpc doDeposit(DepositRequest) returns (Empty){}
+
+    rpc doWithdraw(WithdrawRequest) returns (Empty){}
+
+    rpc getUserBalance(UserBalanceRequest) returns (UserBalanceResponse){}
+
+}
