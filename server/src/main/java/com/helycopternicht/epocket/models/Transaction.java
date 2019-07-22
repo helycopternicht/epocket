@@ -18,9 +18,9 @@ public class Transaction extends BaseEntity {
 
     private ZonedDateTime createdDate;
 
-    @ManyToOne
-    @JoinColumn(name = "transaction_type_id", nullable = false)
-    private TransactionType transactionType;
+    @Enumerated
+    @Column(name = "transaction_type")
+    private TransactionTypes transactionType;
 
     @ManyToOne
     @JoinColumn(name = "currency_id", nullable = false)

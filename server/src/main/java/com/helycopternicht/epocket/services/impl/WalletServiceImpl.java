@@ -7,7 +7,6 @@ import com.helycopternicht.epocket.models.TransactionTypes;
 import com.helycopternicht.epocket.models.User;
 import com.helycopternicht.epocket.repositories.CurrencyRepository;
 import com.helycopternicht.epocket.repositories.TransactionRepository;
-import com.helycopternicht.epocket.repositories.TransactionTypeRepository;
 import com.helycopternicht.epocket.repositories.UserRepository;
 import com.helycopternicht.epocket.services.UserBalanceService;
 import com.helycopternicht.epocket.services.WalletService;
@@ -22,18 +21,15 @@ public class WalletServiceImpl implements WalletService {
 
     private final UserRepository userRepository;
     private final CurrencyRepository currencyRepository;
-    private final TransactionTypeRepository transactionTypeRepository;
     private final TransactionRepository transactionRepository;
     private final UserBalanceService userBalanceService;
 
     public WalletServiceImpl(@NonNull UserRepository userRepository,
                              @NonNull CurrencyRepository currencyRepository,
-                             @NonNull TransactionTypeRepository transactionTypeRepository,
                              @NonNull UserBalanceService userBalanceService,
                              @NonNull TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
         this.currencyRepository = currencyRepository;
-        this.transactionTypeRepository = transactionTypeRepository;
         this.transactionRepository = transactionRepository;
         this.userBalanceService = userBalanceService;
     }
@@ -55,7 +51,7 @@ public class WalletServiceImpl implements WalletService {
                 .user(user)
                 .currency(currency)
                 .amount(BigDecimal.valueOf(request.getAmount()))
-                .transactionType(transactionTypeRepository.findById(TransactionTypes.DEPOSIT.getId()).get())
+                .transactionType(TransactionTypes.DEPOSIT)
                 .build();
 
         transactionRepository.save(deposit);
@@ -84,7 +80,7 @@ public class WalletServiceImpl implements WalletService {
                 .user(user)
                 .currency(currency)
                 .amount(BigDecimal.valueOf(request.getAmount()))
-                .transactionType(transactionTypeRepository.findById(TransactionTypes.WITHDRAW.getId()).get())
+                .transactionType(TransactionTypes.WITHDRAW)
                 .build();
 
         transactionRepository.save(withdraw);
