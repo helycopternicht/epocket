@@ -18,7 +18,7 @@ public class Transaction extends BaseEntity {
 
     private ZonedDateTime createdDate;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type")
     private TransactionTypes transactionType;
 

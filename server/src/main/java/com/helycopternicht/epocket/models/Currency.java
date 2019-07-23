@@ -1,13 +1,11 @@
 package com.helycopternicht.epocket.models;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-@Getter
-@Setter
+@Data
 
 @Entity
 @Table(name = "currencies")

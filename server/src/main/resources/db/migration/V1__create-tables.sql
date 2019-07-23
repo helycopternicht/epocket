@@ -16,10 +16,3 @@ CREATE TABLE transactions(
   transaction_type VARCHAR(20) NOT NULL,
   amount NUMERIC(13, 3)
 );
-
-CREATE TABLE monthly_balances(
-  month TIMESTAMP WITH TIME ZONE NOT NULL,
-  user_id BIGINT REFERENCES users(id) NOT NULL ,
-  currency_id BIGINT REFERENCES currencies(id) NOT NULL ,
-  balance NUMERIC(13, 3)
-);

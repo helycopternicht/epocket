@@ -4,13 +4,12 @@ option java_package = "com.helycopternicht.epocket.api";
 
 message Empty {}
 
-message DepositRequest {
+message User {
     int64 userId = 1;
-    double amount = 2;
-    string currency = 3;
+    string name = 2;
 }
 
-message WithdrawRequest {
+message TransactionRequest {
     int64 userId = 1;
     double amount = 2;
     string currency = 3;
@@ -21,14 +20,15 @@ message UserBalanceRequest {
 }
 
 message UserBalanceResponse {
-    map<string, double> balances = 1;
+    User user = 1;
+    map<string, double> balances = 2;
 }
 
 service WalletService {
 
-    rpc doDeposit(DepositRequest) returns (Empty){}
+    rpc doDeposit(TransactionRequest) returns (Empty){}
 
-    rpc doWithdraw(WithdrawRequest) returns (Empty){}
+    rpc doWithdraw(TransactionRequest) returns (Empty){}
 
     rpc getUserBalance(UserBalanceRequest) returns (UserBalanceResponse){}
 

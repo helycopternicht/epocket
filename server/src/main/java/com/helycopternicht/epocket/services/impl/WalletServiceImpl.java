@@ -11,12 +11,18 @@ import com.helycopternicht.epocket.repositories.UserRepository;
 import com.helycopternicht.epocket.services.UserBalanceService;
 import com.helycopternicht.epocket.services.WalletService;
 import com.helycopternicht.epocket.services.dtos.UserBalanceResponseDto;
+import io.grpc.Metadata;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
 @Service
+@RequiredArgsConstructor
 public class WalletServiceImpl implements WalletService {
 
     private final UserRepository userRepository;
@@ -24,18 +30,9 @@ public class WalletServiceImpl implements WalletService {
     private final TransactionRepository transactionRepository;
     private final UserBalanceService userBalanceService;
 
-    public WalletServiceImpl(@NonNull UserRepository userRepository,
-                             @NonNull CurrencyRepository currencyRepository,
-                             @NonNull UserBalanceService userBalanceService,
-                             @NonNull TransactionRepository transactionRepository) {
-        this.userRepository = userRepository;
-        this.currencyRepository = currencyRepository;
-        this.transactionRepository = transactionRepository;
-        this.userBalanceService = userBalanceService;
-    }
-
     @Override
-    public void doDeposit(@NonNull DepositRequest request) {
+    @Transactional
+    public void doDeposit(@NonNull TransactionRequest request) {
 
         Currency currency = currencyRepository.findByName(request.getCurrency())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid currency"));
@@ -43,8 +40,8 @@ public class WalletServiceImpl implements WalletService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Cant find user"));
 
-        if (0 > request.getAmount()) {
-            throw new IllegalArgumentException("Amount cant be lass than zero");
+        if (0 >= request.getAmount()) {
+            throw new StatusRuntimeException(Status.INVALID_ARGUMENT, new Metadata());
         }
 
         Transaction deposit = Transaction.builder()
@@ -58,18 +55,19 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public void doWithdraw(@NonNull WithdrawRequest request) {
+    @Transactional
+    public void doWithdraw(@NonNull TransactionRequest request) {
         Currency currency = currencyRepository.findByName(request.getCurrency())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid currency"));
 
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Cant find user"));
 
-        if (0 > request.getAmount()) {
+        if (0 >= request.getAmount()) {
             throw new IllegalArgumentException("Amount cant be lass than zero");
         }
 
-        UserBalanceResponseDto userBalance = userBalanceService.getUserBalance(request.getUserId());
+        UserBalanceResponseDto userBalance = userBalanceService.getUserBalance(user);
         BigDecimal currentBalance = userBalance.getBalance().get(currency);
 
         if (null == currentBalance || currentBalance.doubleValue() < request.getAmount()) {
@@ -87,11 +85,22 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserBalanceResponse getUserBalance(@NonNull UserBalanceRequest request) {
-        UserBalanceResponseDto userBalance = userBalanceService.getUserBalance(request.getUserId());
+
+        User databaseUser = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("Cant find user"));
+
+        UserBalanceResponseDto userBalance = userBalanceService.getUserBalance(databaseUser);
+
         UserBalanceResponse.Builder builder = UserBalanceResponse.newBuilder();
         userBalance.getBalance().forEach((currency, sum) ->
             builder.putBalances(currency.getName(), sum.doubleValue())
+        );
+        builder.setUser(
+                com.helycopternicht.epocket.api.User.newBuilder()
+                .setUserId(databaseUser.getId())
+                .setName(databaseUser.getName())
         );
         return builder.build();
     }

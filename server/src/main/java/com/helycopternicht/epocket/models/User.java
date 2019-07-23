@@ -1,14 +1,13 @@
 package com.helycopternicht.epocket.models;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+@Data
+
 @Entity
-@Getter
-@Setter
 @Table(name = "users")
 public class User extends BaseEntity {
 
