@@ -4,6 +4,12 @@ option java_package = "com.helycopternicht.epocket.api";
 
 message Empty {}
 
+enum Currency {
+    EUR = 0;
+    USD = 1;
+    GBP = 2;
+}
+
 message User {
     int64 userId = 1;
     string name = 2;
@@ -12,16 +18,21 @@ message User {
 message TransactionRequest {
     int64 userId = 1;
     double amount = 2;
-    string currency = 3;
+    Currency currency = 3;
 }
 
 message UserBalanceRequest {
     int64 userId = 1;
 }
 
+message CurrencyBalance {
+    Currency currency = 1;
+    double balance = 2;
+}
+
 message UserBalanceResponse {
     User user = 1;
-    map<string, double> balances = 2;
+    repeated CurrencyBalance balances = 2;
 }
 
 service WalletService {

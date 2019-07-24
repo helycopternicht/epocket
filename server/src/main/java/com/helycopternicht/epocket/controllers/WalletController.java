@@ -2,6 +2,7 @@ package com.helycopternicht.epocket.controllers;
 
 import com.helycopternicht.epocket.api.*;
 import com.helycopternicht.epocket.services.WalletService;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.NonNull;
 import org.springframework.stereotype.Controller;
@@ -32,8 +33,11 @@ public class WalletController extends WalletServiceGrpc.WalletServiceImplBase {
         try {
             walletService.doWithdraw(request);
         } catch (RuntimeException ex) {
-            responseObserver.onError(ex);
-            throw ex;
+            responseObserver.onError(
+                    Status.INTERNAL
+                            .withDescription(ex.getMessage())
+                            .asRuntimeException()
+            );
         }
         responseObserver.onNext(Empty.newBuilder().build());
         responseObserver.onCompleted();

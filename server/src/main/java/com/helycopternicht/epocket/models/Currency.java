@@ -11,4 +11,8 @@ import javax.persistence.Table;
 @Table(name = "currencies")
 public class Currency extends BaseEntity {
     private String name;
+
+    public com.helycopternicht.epocket.api.Currency getCurrency() {
+        return com.helycopternicht.epocket.api.Currency.valueOf(name);
+    }
 }

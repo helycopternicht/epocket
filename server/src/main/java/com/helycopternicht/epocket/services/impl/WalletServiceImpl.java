@@ -1,5 +1,6 @@
 package com.helycopternicht.epocket.services.impl;
 
+import com.helycopternicht.epocket.exceptions.InsufficientFondsException;
 import com.helycopternicht.epocket.api.*;
 import com.helycopternicht.epocket.models.Currency;
 import com.helycopternicht.epocket.models.Transaction;
@@ -34,7 +35,7 @@ public class WalletServiceImpl implements WalletService {
     @Transactional
     public void doDeposit(@NonNull TransactionRequest request) {
 
-        Currency currency = currencyRepository.findByName(request.getCurrency())
+        Currency currency = currencyRepository.findByName(request.getCurrency().name())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid currency"));
 
         User user = userRepository.findById(request.getUserId())
@@ -57,21 +58,16 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional
     public void doWithdraw(@NonNull TransactionRequest request) {
-        Currency currency = currencyRepository.findByName(request.getCurrency())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid currency"));
+        Currency currency = currencyRepository.findByName(request.getCurrency().name()).get();
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Cant find user"));
-
-        if (0 >= request.getAmount()) {
-            throw new IllegalArgumentException("Amount cant be lass than zero");
-        }
+        User user = new User();
+        user.setId(request.getUserId());
 
         UserBalanceResponseDto userBalance = userBalanceService.getUserBalance(user);
         BigDecimal currentBalance = userBalance.getBalance().get(currency);
 
         if (null == currentBalance || currentBalance.doubleValue() < request.getAmount()) {
-            throw new IllegalArgumentException("Insufficient funds");
+            throw new InsufficientFondsException("Insufficient fonds");
         }
 
         Transaction withdraw = Transaction.builder()
@@ -94,9 +90,16 @@ public class WalletServiceImpl implements WalletService {
         UserBalanceResponseDto userBalance = userBalanceService.getUserBalance(databaseUser);
 
         UserBalanceResponse.Builder builder = UserBalanceResponse.newBuilder();
+
         userBalance.getBalance().forEach((currency, sum) ->
-            builder.putBalances(currency.getName(), sum.doubleValue())
+            builder.addBalances(
+                    CurrencyBalance.newBuilder()
+                            .setCurrency(currency.getCurrency())
+                            .setBalance(sum.doubleValue())
+                            .build()
+            )
         );
+
         builder.setUser(
                 com.helycopternicht.epocket.api.User.newBuilder()
                 .setUserId(databaseUser.getId())
