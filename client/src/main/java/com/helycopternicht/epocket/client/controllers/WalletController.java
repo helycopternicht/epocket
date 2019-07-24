@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 public class WalletController {
@@ -16,12 +18,12 @@ public class WalletController {
     private final WalletService walletService;
 
     @PostMapping("/deposit")
-    public void doDeposit(@RequestBody TransactionRequestDto request) {
+    public void doDeposit(@RequestBody @Valid TransactionRequestDto request) {
         walletService.doDeposit(request);
     }
 
     @PostMapping("/withdraw")
-    public void doWithdraw(@RequestBody TransactionRequestDto request) {
+    public void doWithdraw(@RequestBody @Valid TransactionRequestDto request) {
         walletService.doWithdraw(request);
     }
 

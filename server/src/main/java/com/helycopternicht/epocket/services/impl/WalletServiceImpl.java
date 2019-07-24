@@ -1,7 +1,10 @@
 package com.helycopternicht.epocket.services.impl;
 
+import com.helycopternicht.epocket.api.CurrencyBalance;
+import com.helycopternicht.epocket.api.TransactionRequest;
+import com.helycopternicht.epocket.api.UserBalanceRequest;
+import com.helycopternicht.epocket.api.UserBalanceResponse;
 import com.helycopternicht.epocket.exceptions.InsufficientFondsException;
-import com.helycopternicht.epocket.api.*;
 import com.helycopternicht.epocket.models.Currency;
 import com.helycopternicht.epocket.models.Transaction;
 import com.helycopternicht.epocket.models.TransactionTypes;
@@ -12,9 +15,6 @@ import com.helycopternicht.epocket.repositories.UserRepository;
 import com.helycopternicht.epocket.services.UserBalanceService;
 import com.helycopternicht.epocket.services.WalletService;
 import com.helycopternicht.epocket.services.dtos.UserBalanceResponseDto;
-import io.grpc.Metadata;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,24 +26,19 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class WalletServiceImpl implements WalletService {
 
-    private final UserRepository userRepository;
     private final CurrencyRepository currencyRepository;
     private final TransactionRepository transactionRepository;
     private final UserBalanceService userBalanceService;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
     public void doDeposit(@NonNull TransactionRequest request) {
 
-        Currency currency = currencyRepository.findByName(request.getCurrency().name())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid currency"));
+        Currency currency = currencyRepository.findByName(request.getCurrency().name()).get();
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Cant find user"));
-
-        if (0 >= request.getAmount()) {
-            throw new StatusRuntimeException(Status.INVALID_ARGUMENT, new Metadata());
-        }
+        User user = new User();
+        user.setId(request.getUserId());
 
         Transaction deposit = Transaction.builder()
                 .user(user)
@@ -84,11 +79,8 @@ public class WalletServiceImpl implements WalletService {
     @Transactional(readOnly = true)
     public UserBalanceResponse getUserBalance(@NonNull UserBalanceRequest request) {
 
-        User databaseUser = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Cant find user"));
-
+        User databaseUser = userRepository.findById(request.getUserId()).get();
         UserBalanceResponseDto userBalance = userBalanceService.getUserBalance(databaseUser);
-
         UserBalanceResponse.Builder builder = UserBalanceResponse.newBuilder();
 
         userBalance.getBalance().forEach((currency, sum) ->
