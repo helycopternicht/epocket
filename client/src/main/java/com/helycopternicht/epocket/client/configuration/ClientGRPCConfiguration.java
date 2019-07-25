@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class ClientGRPCConfiguration {
 
-    private final PropertyHolder holder;
+    private final GrpcServerPropertyHolder propertyHolder;
 
     @Bean
     public ManagedChannel channel() {
         return ManagedChannelBuilder
-                .forAddress(holder.getHost(), holder.getPort())
+                .forAddress(propertyHolder.getHost(), propertyHolder.getPort())
                 .usePlaintext()
                 .build();
     }
@@ -25,6 +25,8 @@ public class ClientGRPCConfiguration {
     public WalletServiceGrpc.WalletServiceBlockingStub walletService(ManagedChannel channel) {
         return WalletServiceGrpc.newBlockingStub(channel);
     }
+
+    // TODO: shutdown channel?
 
 }
 

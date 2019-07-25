@@ -1,10 +1,10 @@
 package com.helycopternicht.epocket.client.services.impl;
 
+import com.helycopternicht.epocket.api.TransactionRequest;
+import com.helycopternicht.epocket.api.UserBalanceRequest;
 import com.helycopternicht.epocket.api.UserBalanceResponse;
 import com.helycopternicht.epocket.api.WalletServiceGrpc;
 import com.helycopternicht.epocket.client.services.WalletService;
-import com.helycopternicht.epocket.client.services.dtos.TransactionRequestDto;
-import com.helycopternicht.epocket.client.services.dtos.UserBalanceRequestDto;
 import io.grpc.StatusRuntimeException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -19,36 +19,39 @@ public class WalletServiceImpl implements WalletService {
     private final WalletServiceGrpc.WalletServiceBlockingStub stub;
 
     @Override
-    public void doDeposit(@NonNull TransactionRequestDto request) {
+    public void doDeposit(@NonNull TransactionRequest request) {
 
         try {
-            stub.doDeposit(request.toTransactionRequest());
+            stub.doDeposit(request);
+            log.info("DO DEPOSIT {} {}, user id: {}", request.getAmount(), request.getCurrency(), request.getUserId());
         } catch (StatusRuntimeException e) {
-            log.warn("RPC failed: {0}", e.getStatus());
-            throw e;
+            log.warn("Deposit failed: {} with message {}", e.getStatus(), e.getMessage());
+            // TODO: error handling code should be here
         }
     }
 
     @Override
-    public void doWithdraw(@NonNull TransactionRequestDto request) {
+    public void doWithdraw(@NonNull TransactionRequest request) {
 
         try {
-            stub.doWithdraw(request.toTransactionRequest());
+            stub.doWithdraw(request);
+            log.info("DO WITHDRAW {} {}, user id: {}", request.getAmount(), request.getCurrency(), request.getUserId());
         } catch (StatusRuntimeException e) {
-            log.warn("RPC failed: {0}", e.getStatus());
-            throw e;
+            log.warn("Withdraw failed: {} with message {}", e.getStatus(), e.getMessage());
+            // TODO: error handling code should be here
         }
     }
 
     @Override
-    public UserBalanceResponse getUserBalance(UserBalanceRequestDto request) {
+    public UserBalanceResponse getUserBalance(UserBalanceRequest request) {
 
-        UserBalanceResponse response;
+        UserBalanceResponse response = null;
         try {
-            response = stub.getUserBalance(request.toUserBalanceRequest());
+            response = stub.getUserBalance(request);
+            log.info("DO BALANCE, user id: {}", request.getUserId());
         } catch (StatusRuntimeException e) {
-            log.warn("RPC failed: {0}", e.getStatus());
-            throw e;
+            log.warn("Balance failed: {} with message {}", e.getStatus(), e.getMessage());
+            // TODO: error handling code should be here
         }
         return response;
     }

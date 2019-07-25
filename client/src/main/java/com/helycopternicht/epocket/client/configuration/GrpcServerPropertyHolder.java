@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 @ConfigurationProperties("grpc-server")
-public class PropertyHolder {
-
+public class GrpcServerPropertyHolder {
     private String host;
     private Integer port;
-
 }
