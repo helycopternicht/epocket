@@ -8,10 +8,8 @@ import com.helycopternicht.epocket.exceptions.InsufficientFondsException;
 import com.helycopternicht.epocket.models.Currency;
 import com.helycopternicht.epocket.models.Transaction;
 import com.helycopternicht.epocket.models.TransactionTypes;
-import com.helycopternicht.epocket.models.User;
 import com.helycopternicht.epocket.repositories.CurrencyRepository;
 import com.helycopternicht.epocket.repositories.TransactionRepository;
-import com.helycopternicht.epocket.repositories.UserRepository;
 import com.helycopternicht.epocket.services.UserBalanceService;
 import com.helycopternicht.epocket.services.WalletService;
 import com.helycopternicht.epocket.services.dtos.UserBalanceResponseDto;
@@ -29,19 +27,17 @@ public class WalletServiceImpl implements WalletService {
     private final CurrencyRepository currencyRepository;
     private final TransactionRepository transactionRepository;
     private final UserBalanceService userBalanceService;
-    private final UserRepository userRepository;
 
     @Override
     @Transactional
     public void doDeposit(@NonNull TransactionRequest request) {
 
-        Currency currency = currencyRepository.findByName(request.getCurrency().name()).get();
-
-        User user = new User();
-        user.setId(request.getUserId());
+        Currency currency = currencyRepository.findByName(request.getCurrency().name()).orElseThrow(() ->
+                new IllegalArgumentException("Currency not found")
+        );
 
         Transaction deposit = Transaction.builder()
-                .user(user)
+                .userId(request.getUserId())
                 .currency(currency)
                 .amount(BigDecimal.valueOf(request.getAmount()))
                 .transactionType(TransactionTypes.DEPOSIT)
@@ -53,12 +49,12 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional
     public void doWithdraw(@NonNull TransactionRequest request) {
-        Currency currency = currencyRepository.findByName(request.getCurrency().name()).get();
 
-        User user = new User();
-        user.setId(request.getUserId());
+        Currency currency = currencyRepository.findByName(request.getCurrency().name()).orElseThrow(() ->
+            new IllegalArgumentException("Currency not found")
+        );
 
-        UserBalanceResponseDto userBalance = userBalanceService.getUserBalance(user);
+        UserBalanceResponseDto userBalance = userBalanceService.getUserBalance(request.getUserId());
         BigDecimal currentBalance = userBalance.getBalance().get(currency);
 
         if (null == currentBalance || currentBalance.doubleValue() < request.getAmount()) {
@@ -66,7 +62,7 @@ public class WalletServiceImpl implements WalletService {
         }
 
         Transaction withdraw = Transaction.builder()
-                .user(user)
+                .userId(request.getUserId())
                 .currency(currency)
                 .amount(BigDecimal.valueOf(request.getAmount()))
                 .transactionType(TransactionTypes.WITHDRAW)
@@ -79,10 +75,10 @@ public class WalletServiceImpl implements WalletService {
     @Transactional(readOnly = true)
     public UserBalanceResponse getUserBalance(@NonNull UserBalanceRequest request) {
 
-        User databaseUser = userRepository.findById(request.getUserId()).get();
-        UserBalanceResponseDto userBalance = userBalanceService.getUserBalance(databaseUser);
+        UserBalanceResponseDto userBalance = userBalanceService.getUserBalance(request.getUserId());
         UserBalanceResponse.Builder builder = UserBalanceResponse.newBuilder();
 
+        builder.setUserId(request.getUserId());
         userBalance.getBalance().forEach((currency, sum) ->
             builder.addBalances(
                     CurrencyBalance.newBuilder()
@@ -92,11 +88,6 @@ public class WalletServiceImpl implements WalletService {
             )
         );
 
-        builder.setUser(
-                com.helycopternicht.epocket.api.User.newBuilder()
-                .setUserId(databaseUser.getId())
-                .setName(databaseUser.getName())
-        );
         return builder.build();
     }
 }

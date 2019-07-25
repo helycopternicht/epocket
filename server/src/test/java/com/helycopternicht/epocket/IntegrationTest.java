@@ -1,7 +1,7 @@
 package com.helycopternicht.epocket;
 
 import com.helycopternicht.epocket.api.*;
-import com.helycopternicht.epocket.controllers.WalletController;
+import com.helycopternicht.epocket.endpoints.WalletEndpoint;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.inprocess.InProcessChannelBuilder;
@@ -32,7 +32,7 @@ public class IntegrationTest {
     public final GrpcCleanupRule grpcCleanup = new GrpcCleanupRule();
 
     @Autowired
-    private WalletController walletController;
+    private WalletEndpoint walletEndpoint;
 
     private WalletServiceGrpc.WalletServiceBlockingStub blockingStub;
 
@@ -41,7 +41,7 @@ public class IntegrationTest {
 
         String serverName = InProcessServerBuilder.generateName();
         grpcCleanup.register(InProcessServerBuilder
-                .forName(serverName).directExecutor().addService(walletController).build().start());
+                .forName(serverName).directExecutor().addService(walletEndpoint).build().start());
 
         blockingStub = WalletServiceGrpc.newBlockingStub(
                 grpcCleanup.register(InProcessChannelBuilder.forName(serverName).directExecutor().build())

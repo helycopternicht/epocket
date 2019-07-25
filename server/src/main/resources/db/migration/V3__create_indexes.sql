@@ -1,6 +1,3 @@
-CREATE INDEX ix_users_name
-  ON users (name);
-
 CREATE INDEX ix_currency_name
   ON currencies (name);
 

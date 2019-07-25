@@ -1,6 +1,6 @@
 package com.helycopternicht.epocket.configuration;
 
-import com.helycopternicht.epocket.controllers.WalletController;
+import com.helycopternicht.epocket.endpoints.WalletEndpoint;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,10 +16,10 @@ public class GRPCConfiguration {
     private Integer port;
 
     @Bean
-    public Server grpcServer(WalletController walletController) throws IOException {
+    public Server grpcServer(WalletEndpoint walletEndpoint) throws IOException {
         return ServerBuilder
                 .forPort(port)
-                .addService(walletController)
+                .addService(walletEndpoint)
                 .build()
                 .start();
     }

@@ -12,6 +12,6 @@ import java.util.Map;
 @Setter
 @Builder
 public class UserBalanceResponseDto {
-    private UserResponseDto user;
+    private Long userId;
     private Map<Currency, BigDecimal> balance;
 }

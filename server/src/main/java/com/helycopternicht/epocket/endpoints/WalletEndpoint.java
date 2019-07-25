@@ -1,18 +1,18 @@
-package com.helycopternicht.epocket.controllers;
+package com.helycopternicht.epocket.endpoints;
 
 import com.helycopternicht.epocket.api.*;
 import com.helycopternicht.epocket.services.WalletService;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.NonNull;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 
-@Controller
-public class WalletController extends WalletServiceGrpc.WalletServiceImplBase {
+@Component
+public class WalletEndpoint extends WalletServiceGrpc.WalletServiceImplBase {
 
     private final WalletService walletService;
 
-    public WalletController(@NonNull WalletService walletService) {
+    public WalletEndpoint(@NonNull WalletService walletService) {
         this.walletService = walletService;
     }
 
@@ -22,7 +22,7 @@ public class WalletController extends WalletServiceGrpc.WalletServiceImplBase {
             walletService.doDeposit(request);
         } catch (RuntimeException ex) {
             responseObserver.onError(ex);
-            throw ex;
+            return;
         }
         responseObserver.onNext(Empty.newBuilder().build());
         responseObserver.onCompleted();
@@ -38,6 +38,7 @@ public class WalletController extends WalletServiceGrpc.WalletServiceImplBase {
                             .withDescription(ex.getMessage())
                             .asRuntimeException()
             );
+            return;
         }
         responseObserver.onNext(Empty.newBuilder().build());
         responseObserver.onCompleted();
@@ -50,7 +51,7 @@ public class WalletController extends WalletServiceGrpc.WalletServiceImplBase {
             userBalance = walletService.getUserBalance(request);
         } catch (RuntimeException ex) {
             responseObserver.onError(ex);
-            throw ex;
+            return;
         }
         responseObserver.onNext(userBalance);
         responseObserver.onCompleted();

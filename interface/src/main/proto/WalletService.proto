@@ -10,11 +10,6 @@ enum Currency {
     GBP = 2;
 }
 
-message User {
-    int64 userId = 1;
-    string name = 2;
-}
-
 message TransactionRequest {
     int64 userId = 1;
     double amount = 2;
@@ -31,7 +26,7 @@ message CurrencyBalance {
 }
 
 message UserBalanceResponse {
-    User user = 1;
+    int64 userId = 1;
     repeated CurrencyBalance balances = 2;
 }
 
