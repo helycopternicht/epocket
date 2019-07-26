@@ -40,8 +40,14 @@ public class IntegrationTest {
     public void setUp() throws Exception {
 
         String serverName = InProcessServerBuilder.generateName();
-        grpcCleanup.register(InProcessServerBuilder
-                .forName(serverName).directExecutor().addService(walletEndpoint).build().start());
+        grpcCleanup.register(
+                InProcessServerBuilder
+                        .forName(serverName)
+                        .directExecutor()
+                        .addService(walletEndpoint)
+                        .build()
+                        .start()
+        );
 
         blockingStub = WalletServiceGrpc.newBlockingStub(
                 grpcCleanup.register(InProcessChannelBuilder.forName(serverName).directExecutor().build())
@@ -113,7 +119,7 @@ public class IntegrationTest {
         try {
             doWithdraw(userId, Currency.USD, 200.);
         } catch (StatusRuntimeException ex) {
-            exception =  ex;
+            exception = ex;
         }
 
         assertNull(exception);
@@ -162,7 +168,7 @@ public class IntegrationTest {
         try {
             doWithdraw(userId, Currency.USD, 200.);
         } catch (StatusRuntimeException ex) {
-            exception =  ex;
+            exception = ex;
         }
         assertNotNull(exception);
         assertEquals(Status.Code.INTERNAL, exception.getStatus().getCode());

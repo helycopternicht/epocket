@@ -1,0 +1,19 @@
+version: '3'
+services:
+  db:
+    image: postgres:9.5
+    hostname: db
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - ./initial_scripts:/docker-entrypoint-initdb.d/
+  epocket-server:
+    build: .
+    ports:
+      - "8090:8090"
+    depends_on:
+      - db
+    links:
+      - db

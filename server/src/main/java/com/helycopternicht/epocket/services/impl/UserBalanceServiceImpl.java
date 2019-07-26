@@ -3,7 +3,6 @@ package com.helycopternicht.epocket.services.impl;
 import com.helycopternicht.epocket.models.Balance;
 import com.helycopternicht.epocket.models.Currency;
 import com.helycopternicht.epocket.models.TransactionTypes;
-import com.helycopternicht.epocket.repositories.TransactionRepository;
 import com.helycopternicht.epocket.services.UserBalanceService;
 import com.helycopternicht.epocket.services.dtos.UserBalanceResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,6 @@ public class UserBalanceServiceImpl implements UserBalanceService {
                     "GROUP BY currency_id;";
 
     private final EntityManager entityManager;
-    private final TransactionRepository transactionRepository;
 
     @Override
     public UserBalanceResponseDto getUserBalance(Long userId) {

@@ -9,11 +9,9 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.helycopternicht.epocket.client.tasks.QueryCounter.getCounter;
-
+@Slf4j
 @Getter
 @Setter
-@Slf4j
 public abstract class Round {
 
     private WalletService walletService;
@@ -22,17 +20,17 @@ public abstract class Round {
     public abstract void execute();
 
     protected void deposit(double amount, @NonNull Currency currency) {
-        getCounter().incrementAndGet();
+        QueryCounter.increment();
         walletService.doDeposit(createTransactionRequest(amount, currency));
     }
 
     protected void withdraw(double amount, @NonNull Currency currency) {
-        getCounter().incrementAndGet();
+        QueryCounter.increment();
         walletService.doWithdraw(createTransactionRequest(amount, currency));
     }
 
     protected void balance() {
-        getCounter().incrementAndGet();
+        QueryCounter.increment();
         walletService.getUserBalance(createBalanceRequest());
     }
 

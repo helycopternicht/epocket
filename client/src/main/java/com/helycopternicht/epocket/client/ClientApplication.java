@@ -8,8 +8,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import static com.helycopternicht.epocket.client.tasks.QueryCounter.getCounter;
-
 @Slf4j
 @SpringBootApplication
 public class ClientApplication implements CommandLineRunner {
@@ -27,7 +25,6 @@ public class ClientApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         processor.process();
-        log.info("{} QUERY PROCESSED", getCounter().get());
         System.exit(SpringApplication.exit(app));
     }
 }

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static com.helycopternicht.epocket.client.tasks.QueryCounter.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,9 +26,11 @@ public class UserEmulatorProcessorImpl implements UserEmulatorProcessor {
     public void process() {
         List<UserEmulator> emulators = createUserEmulators();
         log.info("Test started");
+        begin();
         List<Future<Boolean>> futures = startUserEmulators(emulators);
         waitingForComplete(futures);
-        log.info("Test completed");
+        finish();
+        log.info("Test completed. QUERY PROCESSED: {} at {} seconds. Query per second: {}", countProcessed(), elapsedTime(), countPerSecond());
     }
 
     private List<Future<Boolean>> startUserEmulators(List<UserEmulator> emulators) {
