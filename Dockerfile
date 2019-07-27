@@ -1,6 +1,4 @@
-FROM openjdk:8-jdk
+FROM maven:3.6.1-jdk-8
 WORKDIR /app
-COPY . .
-RUN ./mvnw clean package -Dmaven.test.skip=true
-#COPY server/target/server-0.0.1-SNAPSHOT.jar app.jar
+COPY server/target/server-0.0.1-SNAPSHOT.jar /app/server/target/server-0.0.1-SNAPSHOT.jar
 CMD ["java", "-jar","/app/server/target/server-0.0.1-SNAPSHOT.jar"]
