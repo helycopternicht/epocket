@@ -11,7 +11,7 @@ cd epocket
 ### Step 2.
 Compile and install 
 ```
-./mvnw install -D maven.test.skip=true 
+./mvnw clean install -Dmaven.test.skip=true 
 ```
 We skip tests is because integration tests require database, which we have not yet 
 
@@ -31,9 +31,11 @@ docker-compose start app
 Build and start client app with settings.
 Set to corresponding env variables values to start client with.
 For exmaple:
+```
 -Dclient-settings.number-of-users=10
 -Dclient-settings.number-of-user-threads=5
 -Dclient-settings.number-of-rounds-per-thread=5
+```
 
 ```
 cd client
