@@ -1,6 +1,9 @@
 # HOW TO INSTALL
 ### Requirements
-To start project we need docker and docker-compose
+To start project you need:
+ - jdk >= 8
+ - docker
+ - docker-compose
 
 ### Step 1. 
 Clone project and enter project directory
