@@ -1,0 +1,6 @@
+rootProject.name = 'epocket-app'
+include ':interface'
+include ':client'
+include ':server'
+
+project(':interface').projectDir = "$rootDir/interface" as File

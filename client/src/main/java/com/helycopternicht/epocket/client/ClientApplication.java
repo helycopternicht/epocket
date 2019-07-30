@@ -3,14 +3,15 @@ package com.helycopternicht.epocket.client;
 import com.helycopternicht.epocket.client.services.UserEmulatorProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import javax.annotation.PostConstruct;
+
 @Slf4j
 @SpringBootApplication
-public class ClientApplication implements CommandLineRunner {
+public class ClientApplication {
 
     @Autowired
     private UserEmulatorProcessor processor;
@@ -22,8 +23,8 @@ public class ClientApplication implements CommandLineRunner {
         SpringApplication.run(ClientApplication.class, args);
     }
 
-    @Override
-    public void run(String... args) throws Exception {
+    @PostConstruct
+    public void run() {
         processor.process();
         System.exit(SpringApplication.exit(app));
     }
