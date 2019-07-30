@@ -41,7 +41,6 @@ For exmaple:
 ```
 
 ```
-cd client
 ./mvnw package
 java -Dclient-settings.number-of-users=5 -Dclient-settings.number-of-user-threads=5 -Dclient-settings.number-of-rounds-per-thread=5 -jar client/target/client-0.0.1-SNAPSHOT.jar
 ```
