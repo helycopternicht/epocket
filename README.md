@@ -14,7 +14,7 @@ cd epocket
 ### Step 2.
 Compile and install 
 ```
-./mvnw clean install -Dmaven.test.skip=true 
+./gradlew clean build install -x test
 ```
 We skip tests is because integration tests require database, which we have not yet 
 
@@ -22,18 +22,17 @@ We skip tests is because integration tests require database, which we have not y
 Build server app
 ```
 docker-compose up --build
+docker-compose ps
 ```
-wait until projects start.....
-
-May need to restart app service, because app service starts earlier tha database service
+If the app is not started than need to restart app service, because app service starts earlier than database service
 ```
 docker-compose start app
 ```
 
 ### Step 4.
-Build and start client app with settings.
+Start client app with settings.
 Set to corresponding env variables values to start client with.
-For exmaple:
+For example:
 ```
 -Dclient-settings.number-of-users=10
 -Dclient-settings.number-of-user-threads=5
@@ -41,8 +40,7 @@ For exmaple:
 ```
 
 ```
-./mvnw package
-java -Dclient-settings.number-of-users=5 -Dclient-settings.number-of-user-threads=5 -Dclient-settings.number-of-rounds-per-thread=5 -jar client/target/client-0.0.1-SNAPSHOT.jar
+java -Dclient-settings.number-of-users=5 -Dclient-settings.number-of-user-threads=5 -Dclient-settings.number-of-rounds-per-thread=5 -jar client/build/libs/client-0.0.1-SNAPSHOT.jar
 ```
 We've done it.
 Instruction requires linux based OS. For other operation systems may need some changes
