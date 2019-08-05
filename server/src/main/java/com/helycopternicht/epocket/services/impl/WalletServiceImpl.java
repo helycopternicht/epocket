@@ -16,6 +16,7 @@ import com.helycopternicht.epocket.services.dtos.UserBalanceResponseDto;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -47,7 +48,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void doWithdraw(@NonNull TransactionRequest request) {
 
         Currency currency = currencyRepository.findByName(request.getCurrency().name()).orElseThrow(() ->
